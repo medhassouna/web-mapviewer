@@ -1,4 +1,4 @@
-import {API_BASE_URL, WMTS_BASE_URL} from "@/config";
+import {API_BASE_URL, WMTS_BASE_URL, WMS_BASE_URL} from "@/config";
 import axios from "axios";
 
 /**
@@ -141,16 +141,15 @@ export class WMSLayer extends Layer {
     }
 
     getURL() {
-        return `${this.baseURL}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2F${this.format}&TRANSPARENT=true&LAYERS=${this.id}&LANG=en`;
+        return `${this.baseURL ? this.baseURL : WMS_BASE_URL}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2F${this.format}&TRANSPARENT=true&LAYERS=${this.id}&LANG=en`;
     }
 }
 
 export class GeoJsonLayer extends Layer {
-    constructor(name, id, opacity) {
+    constructor(name, id, opacity, geoJsonUrl, styleUrl) {
         super(name, LayerTypes.GEOJSON, id, opacity);
-        this.data = null;
-        this.style = null;
-        this.fetching = false;
+        this.geoJsonUrl = geoJsonUrl;
+        this.styleUrl = styleUrl;
     }
 }
 
@@ -170,7 +169,7 @@ const generateClassForLayerConfig = (layerConfig) => {
                 layer = new WMSLayer(name, id, opacity, layerConfig.wmsUrl, format);
                 break;
             case 'geojson':
-                layer = new GeoJsonLayer(name, id, opacity);
+                layer = new GeoJsonLayer(name, id, opacity, layerConfig.geojsonUrl, layerConfig.styleUrl);
                 break;
             case 'aggregate':
                 // TODO handle aggregate layers
