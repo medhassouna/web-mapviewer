@@ -1,4 +1,4 @@
-import search, {CombinedSearchResults, RESULT_TYPE} from "../../../api/search.api";
+import search, {CombinedSearchResults, RESULT_TYPE} from "@/api/search.api";
 
 const state = {
     pending: false,
@@ -47,6 +47,7 @@ const actions = {
                 if (entry.extent.length === 2) {
                     dispatch('setExtent', entry.extent);
                 }
+                console.log('entry', entry);
                 dispatch('highlightLocation', {
                     id: entry.featureId || entry.description,
                     coordinate: entry.coordinates,

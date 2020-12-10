@@ -1,5 +1,3 @@
-import center from "@turf/center";
-import { point, featureCollection } from "@turf/helpers"
 import proj4 from "proj4";
 import {round} from "@/numberUtils";
 
@@ -82,25 +80,22 @@ const actions = {
             commit('setCenter', {x, y});
         }
     },
-    setExtent: ({commit, getters, rootState}, extent) => {
+    setExtent: ({commit, rootState}, extent) => {
         if (extent && Array.isArray(extent) && extent.length === 2) {
             // calculating center of this extent
-            const centerOfExtentEpsg4326 = center(featureCollection([
-                point(proj4('EPSG:3857', proj4.WGS84, extent[0])),
-                point(proj4('EPSG:3857', proj4.WGS84, extent[0]))
-            ])).geometry.coordinates;
-            const centerOfExtent = proj4(proj4.WGS84, 'EPSG:3857', centerOfExtentEpsg4326);
+            const centerOfExtent = [ extent[0][0] + (extent[1][0] - extent[0][0]) / 2, extent[0][1] + (extent[1][1] - extent[0][1]) / 2 ];
             if (centerOfExtent && Array.isArray(centerOfExtent) && centerOfExtent.length === 2) {
-                commit('setCenter', {
-                    x: centerOfExtent[0],
-                    y: centerOfExtent[1]
-                });
+                commit('setCenter', {x: centerOfExtent[0], y: centerOfExtent[1]});
+                const newResolution = Math.max((extent[1][0] - extent[0][0]) / rootState.ui.width, (extent[1][1] - extent[0][1]) / rootState.ui.height);
+                // calculating new zoom level by reversing
+                // resolution = 156543.03 meters/pixel * cos(latitude) / (2 ^ zoomlevel)
+                // so : zoom = log2(156543.03 * cos(lat) / resolution)
+                const latInRadian = proj4('EPSG:3857', proj4.WGS84, centerOfExtent)[0] * Math.PI / 180.0;
+                const zoom = Math.log2(PIXEL_LENGTH_IN_KM_AT_ZOOM_ZERO_WITH_256PX_TILES * Math.abs(Math.cos(latInRadian)) / newResolution);
+                if (!Number.isNaN(zoom)) {
+                    commit('setZoom', zoom);
+                }
             }
-            const newResolution = (extent[1][0] - extent[0][0]) / rootState.ui.width;
-            // calculating new zoom level by reversing
-            // resolution = 156543.03 meters/pixel * cos(latitude) / (2 ^ zoomlevel)
-            const zoom = Math.abs(Math.log2(newResolution / PIXEL_LENGTH_IN_KM_AT_ZOOM_ZERO_WITH_256PX_TILES / Math.cos(getters.centerEpsg4326InRadian[1])));
-            commit('setZoom', zoom);
         }
     },
     setLatitude: ({dispatch, getters}, latInDeg) => {

@@ -5,6 +5,8 @@ export const DATA_BASE_URL = process.env.VUE_APP_DATA_BASE_URL;
 export const WMTS_BASE_URL = process.env.VUE_APP_WMTS_BASE_URL;
 export const WMS_BASE_URL = process.env.VUE_APP_WMS_BASE_URL;
 
+export const VECTOR_TILES_STYLE_URL = "https://vectortiles10.geo.admin.ch/gl-styles/ch.swisstopo.leichte-basiskarte.vt/v0.6.13/style.json";
+
 // comes from https://github.com/geoadmin/mf-geoadmin3/blob/master/src/components/map/TileGrid.js
 export const WMS_TILE_SIZE = 512; // px
 
