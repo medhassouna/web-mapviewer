@@ -2,6 +2,7 @@
     <button class="button-with-icon d-flex btn" :class="buttonClasses" @click="forwardClickEvent">
         <FontAwesomeIcon
             v-if="iconsBeforeText && buttonFontAwesomeIcon && buttonFontAwesomeIcon.length > 0"
+            class="icon"
             :icon="buttonFontAwesomeIcon"
         />
         <span v-if="buttonTitle" :class="labelClasses">
@@ -9,6 +10,7 @@
         </span>
         <FontAwesomeIcon
             v-if="!iconsBeforeText && buttonFontAwesomeIcon && buttonFontAwesomeIcon.length > 0"
+            class="icon"
             :icon="buttonFontAwesomeIcon"
         />
     </button>
@@ -68,7 +70,7 @@ export default {
             type: Boolean,
             default: false,
         },
-        square: {
+        round: {
             type: Boolean,
             default: false,
         },
@@ -100,8 +102,8 @@ export default {
             if (this.direction === 'column') {
                 classes.push('flex-column')
             }
-            if (this.square) {
-                classes.push('square')
+            if (this.round) {
+                classes.push('round')
             }
             return classes
         },
@@ -130,15 +132,20 @@ export default {
         background: none;
         border: none;
     }
+    &.round .svg-inline--fa {
+        width: 10px;
+        height: 10px;
+        padding: 2px;
+        box-shadow: 0 0 2px #c7c7c7;
+        border: 1px solid #afafaf;
+        border-radius: 50%;
+        justify-content: center;
+    }
 }
 svg {
     transition: transform 0.2s, color 0.2s;
     .flip & {
         transform: rotate(180deg);
-    }
-    .square & {
-        width: 1em;
-        // height:1em is set by FontAwesome.
     }
 }
 </style>
